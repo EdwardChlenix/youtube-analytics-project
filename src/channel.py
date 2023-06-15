@@ -17,7 +17,7 @@ class Channel:
     def __init__(self, channel_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
         self.__channel_id = channel_id
-        self.channel_dict = youtube.channels().list(id=self.__channel_id, part='snippet,statistics').execute()
+        self.channel_dict = self.get_service().channels().list(id=self.__channel_id, part='snippet,statistics').execute()
         self.title = self.channel_dict['items'][0]['snippet']['title']
         self.video_count = self.channel_dict['items'][0]['statistics']['videoCount']
         self.url = f"https://www.youtube.com/channel/{self.channel_dict['items'][0]['id']}"
@@ -27,7 +27,13 @@ class Channel:
 
     @classmethod
     def get_service(cls):
-        return googleapiclient.discovery.Resource
+        api_key: str = os.getenv('YT_API_KEY')
+        api_object = build('youtube', 'v3', developerKey=api_key)
+        return api_object
+
+    @property
+    def channel_id(self):
+        return self.__channel_id
 
     def to_json(self, json_file):
         channel_data = [self.__channel_id, self.title, self.description, self.url, self.subsribers_count, self.video_count, self.views_count]
@@ -41,3 +47,5 @@ class Channel:
         """Выводит в консоль информацию о канале."""
         #channel_dict = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
         print(json.dumps(self.channel_dict, indent=2, ensure_ascii=False))
+
+
