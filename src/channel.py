@@ -21,7 +21,7 @@ class Channel:
         self.title = self.channel_dict['items'][0]['snippet']['title']
         self.video_count = self.channel_dict['items'][0]['statistics']['videoCount']
         self.url = f"https://www.youtube.com/channel/{self.channel_dict['items'][0]['id']}"
-        self.subsribers_count = self.channel_dict['items'][0]['statistics']['subscriberCount']
+        self.subscribers_count = self.channel_dict['items'][0]['statistics']['subscriberCount']
         self.views_count = self.channel_dict['items'][0]['statistics']['viewCount']
         self.description = self.channel_dict['items'][0]['snippet']['description']
 
@@ -36,7 +36,7 @@ class Channel:
         return self.__channel_id
 
     def to_json(self, json_file):
-        channel_data = [self.__channel_id, self.title, self.description, self.url, self.subsribers_count, self.video_count, self.views_count]
+        channel_data = [self.__channel_id, self.title, self.description, self.url, self.subscribers_count, self.video_count, self.views_count]
         with open(json_file, 'w', encoding='utf-8') as file:
             json.dump(channel_data, file, ensure_ascii=False)
 
@@ -48,4 +48,19 @@ class Channel:
         #channel_dict = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
         print(json.dumps(self.channel_dict, indent=2, ensure_ascii=False))
 
+    def __str__(self):
+        return f"{self.title} ({self.url})"
 
+    def __add__(self, other):
+        return int(self.subscribers_count) + int(other.subscribers_count)
+
+    def __sub__(self, other):
+        return int(self.subscribers_count) - int(other.subscribers_count)
+
+    def __ge__(self, other):
+        return self.subscribers_count >= other.subscribers_count
+    def __gt__(self, other):
+        return self.subscribers_count > other.subscribers_count
+
+    def __eq__(self, other):
+        return self.subscribers_count == other.subscribers_count
